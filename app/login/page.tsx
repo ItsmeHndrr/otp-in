@@ -12,35 +12,30 @@ export default function Login() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setMsg("");
     setLoading(true);
+    setMsg("");
 
     try {
       const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
       if (!url || !key) {
-        throw new Error(
-          "Konfigurasi Supabase belum tersedia. Periksa Environment Variables."
-        );
+        throw new Error("Supabase environment variables belum diatur.");
       }
 
       const supabase = createClient(url, key);
 
-      const { error } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       if (error) throw error;
 
       window.location.href = "/dashboard";
     } catch (error) {
       setMsg(
-        error instanceof Error
-          ? error.message
-          : "Terjadi kesalahan saat login."
+        error instanceof Error ? error.message : "Login gagal."
       );
     } finally {
       setLoading(false);
@@ -76,7 +71,7 @@ export default function Login() {
           {loading ? "Memproses..." : "Masuk"}
         </button>
 
-        <p>{msg}</p>
+        {msg && <p>{msg}</p>}
 
         <small>
           Belum punya akun? <a href="/register">Daftar</a>
